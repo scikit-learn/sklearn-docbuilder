@@ -1,0 +1,3 @@
+salt>=0.17.0
+apache-libcloud
+pyaml
