@@ -11,10 +11,9 @@ github and sourceforge write access.
 Usage
 -----
 
-- Install Apache Libcloud, SaltStack 0.17.2 or later and paramiko
-  (preferably in a virtualenv):
+- Install the script dependencies (preferably in a virtualenv):
 
-    pip install salt paramiko apache-libcloud
+    pip install -r requirements.txt
 
   Apache Libcloud is used to check the status and start a Rackspace cloud
   server dedicated to monitoring the master branch of the project and building
@@ -24,6 +23,8 @@ Usage
   the server.
 
   Paramiko is an Python implementation of the SSH protocol used by SaltStack.
+
+  Yaml is used to parse and generate SaltStack configuration files.
 
 - Ask one of the scikit-learn developers for the `docbuilder_rsa` private key
   next to the `docbuilder_rsa.pub` public key in this folder.
