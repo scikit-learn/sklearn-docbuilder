@@ -3,12 +3,15 @@ import sys, getopt
 import yaml
 
 from libcloud.compute.providers import get_driver
+from libcloud.compute.deployment import SSHKeyDeployment
+
 
 SKLEARN_RACKSPACE_NAME = os.environ.get("SKLEARN_RACKSPACE_NAME")
 SKLEARN_RACKSPACE_KEY = os.environ.get("SKLEARN_RACKSPACE_KEY")
 IMAGE_NAME = 'Ubuntu 12.04 LTS'
 NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
+PUB_KEY_PATH = 'docbuilder_rsa.pub'
 
 def print_usage(machine_sizes):
     print 'USAGE: python docbuilder.py [machine_size]'
@@ -16,13 +19,13 @@ def print_usage(machine_sizes):
     print 'Please select one of the following:'
     print machine_sizes
 
-def gen_salt_roster(host_ip=None, user_login=None, passwd=None):
+def gen_salt_roster(host_ip=None):
     salt_roster = """
         %s:
             host: %s
-            user: %s
-            passwd: %s
-    """ % (NODE_NAME, host_ip[0], user_login, passwd)
+            user: root
+            priv: docbuilder_rsa
+    """ % (NODE_NAME, host_ip[0])
     output_stream = open("salt/roster", "w")
     yaml.dump(yaml.load(salt_roster), output_stream, default_flow_style=False)
     output_stream.close()
@@ -96,8 +99,12 @@ def main(argv):
         print '  -   Configuring the builder image to ', IMAGE_NAME
         s_node_image = [i for i in conn_sklearn.list_images() if i.name == IMAGE_NAME][0]
         # Create a new node if non exists
-        s_node = conn_sklearn.create_node(name=NODE_NAME, image=s_node_image,
-                                          size=s_node_size)
+        with open(PUB_KEY_PATH) as fp:
+            pub_key_content = fp.read()
+        step = SSHKeyDeployment(pub_key_content)
+
+        s_node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
+                                          size=s_node_size, deploy=step)
         print '  -   Node created: ', NODE_NAME
     else:
         s_node = [n for n in s_node_list if n.name == NODE_NAME][0]
