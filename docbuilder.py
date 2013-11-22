@@ -102,7 +102,8 @@ def main(argv):
         with open(PUB_KEY_PATH) as fp:
             pub_key_content = fp.read()
         step = SSHKeyDeployment(pub_key_content)
-
+        print "  -  Starting node deployment - This may take a few minutes"
+        print "     WARNING: Please do not interrupt the process"
         s_node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
                                           size=s_node_size, deploy=step)
         print '  -   Node created: ', NODE_NAME
