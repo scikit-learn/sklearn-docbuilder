@@ -26,9 +26,15 @@ Usage
 
   Yaml is used to parse and generate SaltStack configuration files.
 
-- Ask one of the scikit-learn developers for the `docbuilder_rsa` private key
+- Ask one of the scikit-learn maintainers for the `docbuilder_rsa` private key
   next to the `docbuilder_rsa.pub` public key in this folder.
 
+- Ask one of the scikit-learn maintainers for the Rackspace cloud credentials
+  and put them as enviroment variables (possibly in your `~/.bashrc` file):
+
+    export SKLEARN_RACKSPACE_NAME="sklearn"
+    export SKLEARN_RACKSPACE_KEY="XXXXXXXXX"
+    
 - Then run:
 
     python docbuilder.py
