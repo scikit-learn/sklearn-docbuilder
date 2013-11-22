@@ -1,3 +1,6 @@
 *.pyc
 var
 salt/roster
+salt/master
+docbuilder_rsa
+etc
