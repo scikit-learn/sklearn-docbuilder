@@ -117,8 +117,7 @@ def main(argv):
     print s_node
     print 80 * '-'
 
-    gen_salt_roster(host_ip=s_node.public_ip, user_login='sklearn',
-                    passwd=s_node.extra['password'])
+    gen_salt_roster(host_ip=s_node.public_ip)
 
     salt_master = open("salt/master", "w")
     salt_master.write("root_dir: %s" % os.getcwd())
