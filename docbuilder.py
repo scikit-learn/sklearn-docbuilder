@@ -26,7 +26,7 @@ def gen_salt_roster(host_ip=None):
             user: root
             priv: docbuilder_rsa
     """ % (NODE_NAME, host_ip[0])
-    output_stream = open("salt/roster", "w")
+    output_stream = open("etc/salt/roster", "w")
     yaml.dump(yaml.load(salt_roster), output_stream, default_flow_style=False)
     output_stream.close()
 
@@ -119,7 +119,7 @@ def main(argv):
 
     gen_salt_roster(host_ip=s_node.public_ip)
 
-    salt_master = open("salt/master", "w")
+    salt_master = open("etc/salt/master", "w")
     salt_master.write("root_dir: %s" % os.getcwd())
 
     print '\nChecking if the server is active'
