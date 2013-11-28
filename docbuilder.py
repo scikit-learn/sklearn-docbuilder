@@ -135,11 +135,6 @@ def main(argv):
         print 'Node \'', NODE_NAME, '\' found'
         print '  -   Gathering information'
 
-
-    print 80 * '-'
-    print s_node
-    print 80 * '-'
-
     if not os.path.exists('etc/salt'):
         os.makedirs('etc/salt')
     gen_salt_roster(host_ip=s_node.public_ip)
