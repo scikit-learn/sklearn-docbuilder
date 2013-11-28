@@ -162,7 +162,7 @@ file_roots:
 
     # Making sure the private key has the right permissions to be useable by
     # paramiko
-    os.chmod('docbuilder_rsa', 600)
+    os.chmod('docbuilder_rsa', 0o600)
 
 
 if __name__ == "__main__":
