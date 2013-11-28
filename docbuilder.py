@@ -14,7 +14,8 @@ REGION="ord"
 IMAGE_NAME = 'Ubuntu 12.04 LTS (Precise Pangolin)'
 NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
-PUB_KEY_PATH = 'docbuilder_rsa.pub'
+PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
+PRIVATE_KEY_PATH = 'docbuilder_rsa'
 
 
 def print_usage(machine_sizes):
@@ -25,12 +26,14 @@ def print_usage(machine_sizes):
 
 
 def gen_salt_roster(host_ip=None):
-    salt_roster = """
-        %s:
-            host: %s
-            user: root
-            priv: docbuilder_rsa
-    """ % (NODE_NAME, host_ip[0])
+    # XXX: cannot connect to host with the IPv6 public address
+    ipv4 = [ip for ip in host_ip if not ":" in ip][0]
+    salt_roster = """\
+%s:
+    host: %s
+    user: root
+    priv: %s
+""" % (NODE_NAME, ipv4, PRIVATE_KEY_PATH)
     output_stream = open("etc/salt/roster", "w")
     yaml.dump(yaml.load(salt_roster), output_stream, default_flow_style=False)
     output_stream.close()
@@ -117,7 +120,7 @@ def main(argv):
                         if i.name == IMAGE_NAME][0]
 
         # Create a new node if non exists
-        with open(PUB_KEY_PATH) as fp:
+        with open(PUBLIC_KEY_PATH) as fp:
             pub_key_content = fp.read()
         step = SSHKeyDeployment(pub_key_content)
         print "  -  Starting node deployment - This may take a few minutes"
@@ -154,6 +157,11 @@ file_roots:
 
     print '\nChecking if the server is active'
     server_status = wait_for_active_status(server_status, conn_sklearn)
+
+    # Making sure the private key has the right permissions to be useable by
+    # paramiko
+    os.chmod('docbuilder_rsa', 600)
+
 
 if __name__ == "__main__":
    main(sys.argv[1:])
