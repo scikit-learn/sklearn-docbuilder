@@ -16,6 +16,7 @@ NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
 PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
 PRIVATE_KEY_PATH = 'docbuilder_rsa'
+TIMEOUT = 1200
 
 
 def print_usage(machine_sizes):
@@ -126,7 +127,8 @@ def main(argv):
         print "  -  Starting node deployment - This may take a few minutes"
         print "     WARNING: Please do not interrupt the process"
         s_node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
-                                          size=s_node_size, deploy=step)
+                                          size=s_node_size, deploy=step,
+                                          timeout=TIMEOUT, ssh_timeout=TIMEOUT)
         print '  -   Node successfully provisioned: ', NODE_NAME
     else:
         s_node = [n for n in existing_nodes if n.name == NODE_NAME][0]
