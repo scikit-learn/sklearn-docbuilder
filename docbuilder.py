@@ -5,19 +5,24 @@ import yaml
 from libcloud.compute.providers import get_driver
 from libcloud.compute.deployment import SSHKeyDeployment
 
+# Environment variables to lookup rackspace credentials
+SKLEARN_RACKSPACE_NAME = "SKLEARN_RACKSPACE_NAME"
+SKLEARN_RACKSPACE_KEY = "SKLEARN_RACKSPACE_KEY"
+RACKSPACE_DRIVER = "rackspace"
+REGION="ord"
 
-SKLEARN_RACKSPACE_NAME = os.environ.get("SKLEARN_RACKSPACE_NAME")
-SKLEARN_RACKSPACE_KEY = os.environ.get("SKLEARN_RACKSPACE_KEY")
-IMAGE_NAME = 'Ubuntu 12.04 LTS'
+IMAGE_NAME = 'Ubuntu 12.04 LTS (Precise Pangolin)'
 NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
 PUB_KEY_PATH = 'docbuilder_rsa.pub'
 
+
 def print_usage(machine_sizes):
-    print 'USAGE: python docbuilder.py [machine_size]'
-    print 'Regarding `machine_size` (optional):'
-    print 'Please select one of the following:'
-    print machine_sizes
+    print('USAGE: python docbuilder.py [machine_size]')
+    print('Regarding `machine_size` (optional):')
+    print('Please select one of the following:')
+    print(machine_sizes)
+
 
 def gen_salt_roster(host_ip=None):
     salt_roster = """
@@ -30,12 +35,14 @@ def gen_salt_roster(host_ip=None):
     yaml.dump(yaml.load(salt_roster), output_stream, default_flow_style=False)
     output_stream.close()
 
+
 def r_status(server_state):
     if server_state == 0:
         status = "READY"
     else:
-        status = "BUSY- (waiting for active status)"
+        status = "BUSY - (waiting for active status)"
     return status
+
 
 def wait_for_active_status(server_status, connect):
     # Wait for active server status
@@ -60,14 +67,21 @@ def wait_for_active_status(server_status, connect):
 
 def main(argv):
     # Make a connection through the rackspace driver to the sklearn space
-    conn_sklearn = get_driver('rackspace')(SKLEARN_RACKSPACE_NAME,
-                                           SKLEARN_RACKSPACE_KEY)
+
+    name = os.environ.get(SKLEARN_RACKSPACE_NAME)
+    key = os.environ.get(SKLEARN_RACKSPACE_KEY)
+    if name is None or key is None:
+        raise RuntimeError(
+            "Please set credentials as enviroment variables "
+            " {} and {}".format(SKLEARN_RACKSPACE_NAME, SKLEARN_RACKSPACE_KEY))
+    conn_sklearn = get_driver(RACKSPACE_DRIVER)(name, key, region=REGION)
 
     # Obtain list of nodes
-    s_node_list = conn_sklearn.list_nodes()
+    existing_nodes = conn_sklearn.list_nodes()
+
     # Obtain list of machine sizes
     machine_sizes = [n.ram for n in conn_sklearn.list_sizes()]
-    selected_ram = 0
+    selected_ram = None
     server_status = 3 # assume busy
 
     try:
@@ -87,17 +101,21 @@ def main(argv):
         sys.exit(2)
 
     # Check if our desired node already exists
-    if not any(n.name == NODE_NAME for n in s_node_list):
+    if not any(n.name == NODE_NAME for n in existing_nodes):
         print 'The docbuilder node does not exist yet - creating node...'
         print '  -  Configuring node size'
-        if selected_ram == 0:
+        if selected_ram is None:
             print '    --   No node size provided: using default size of 2GB'
-            s_node_size = [i for i in conn_sklearn.list_sizes() if i.ram == DEFAULT_NODE_SIZE][0]
+            s_node_size = [i for i in conn_sklearn.list_sizes()
+                           if i.ram == DEFAULT_NODE_SIZE][0]
         else:
             print '    --   Node size set to: ', selected_ram
-            s_node_size = [i for i in conn_sklearn.list_sizes() if i.ram == selected_ram][0]
+            s_node_size = [i for i in conn_sklearn.list_sizes()
+                           if i.ram >= selected_ram][0]
         print '  -   Configuring the builder image to ', IMAGE_NAME
-        s_node_image = [i for i in conn_sklearn.list_images() if i.name == IMAGE_NAME][0]
+        s_node_image = [i for i in conn_sklearn.list_images()
+                        if i.name == IMAGE_NAME][0]
+
         # Create a new node if non exists
         with open(PUB_KEY_PATH) as fp:
             pub_key_content = fp.read()
@@ -106,9 +124,9 @@ def main(argv):
         print "     WARNING: Please do not interrupt the process"
         s_node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
                                           size=s_node_size, deploy=step)
-        print '  -   Node created: ', NODE_NAME
+        print '  -   Node successfully provisioned: ', NODE_NAME
     else:
-        s_node = [n for n in s_node_list if n.name == NODE_NAME][0]
+        s_node = [n for n in existing_nodes if n.name == NODE_NAME][0]
         print 'Node \'', NODE_NAME, '\' found'
         print '  -   Gathering information'
 
@@ -117,10 +135,22 @@ def main(argv):
     print s_node
     print 80 * '-'
 
+    if not os.path.exists('etc/salt'):
+        os.makedirs('etc/salt')
     gen_salt_roster(host_ip=s_node.public_ip)
 
     salt_master = open("etc/salt/master", "w")
-    salt_master.write("root_dir: %s" % os.getcwd())
+    here = os.getcwd()
+    salt_master.write("""\
+root_dir: {root_dir}
+
+fileserver_backend:
+  - roots
+
+file_roots:
+  base:
+    - {root_dir}/srv/salt
+""".format(root_dir=here))
 
     print '\nChecking if the server is active'
     server_status = wait_for_active_status(server_status, conn_sklearn)
