@@ -43,7 +43,7 @@ Usage
 You can check that the server is up by running interactive salt commands such
 as:
 
-    salt-ssh -c ./salt "*" test.ping
+    salt-ssh -c ./etc/salt "*" test.ping
 
 
 Changing the ssh keys
