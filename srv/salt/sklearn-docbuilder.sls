@@ -15,20 +15,18 @@ scipy-stack-packages:
             - python-nose
             - ipython
 
-/home/ubuntu/venvs:
-    file.directory:
-        - makedirs: True
-        - user: ubuntu
+sklearn:
+    user.present:
+        - shell: /bin/bash
+        - home: /home/sklearn
 
-
-/home/ubuntu/venvs/venv2:
+/home/sklearn/venv:
     virtualenv.managed:
-        - python: python
+        - python: /usr/bin/python
         - system_site_packages: True
-        - ignore_installed: True
         - distribute: True
-        - runas: ubuntu
+        - user: sklearn
         - require:
-            - file: /home/ubuntu/venvs
+            - user: sklearn
             - pkg: python-virtualenv
 
