@@ -53,8 +53,8 @@ def wait_for_active_status(server_status, connect):
     wait_id = 0
     wait_li = ['.  ', '.. ', '...']
     while server_status != 0:
-        s_node_list = connect.list_nodes()
-        s_node = [n for n in s_node_list if n.name == NODE_NAME][0]
+        existing_nodes = connect.list_nodes()
+        s_node = [n for n in existing_nodes if n.name == NODE_NAME][0]
         server_status = s_node.state
         wait_id = (wait_id + 1) % len(wait_li)
         if server_status == 0:
