@@ -83,6 +83,9 @@ def main(argv):
 
     # Obtain list of nodes
     existing_nodes = conn_sklearn.list_nodes()
+    node_list = "\n".join("  - " + n.name for n in existing_nodes)
+    print "Found %d existing node(s) with names:\n%s" % (
+        len(existing_nodes), node_list)
 
     # Obtain list of machine sizes
     machine_sizes = [n.ram for n in conn_sklearn.list_sizes()]
