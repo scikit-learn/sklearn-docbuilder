@@ -14,6 +14,7 @@ scipy-stack-packages:
             - python-virtualenv
             - python-nose
             - ipython
+            - make
 
 sklearn:
     user.present:
@@ -29,6 +30,14 @@ sklearn:
         - require:
             - user: sklearn
             - pkg: python-virtualenv
+    pip.installed:
+        - names:
+            - sphinx
+            - coverage
+            - nose
+            - ipython
+        - bin_env: /home/sklearn/venv
+        - user: sklearn
 
 sklearn-git-repo:
     git.latest:
@@ -38,3 +47,23 @@ sklearn-git-repo:
         - user: sklearn
         - require:
             - user: sklearn
+
+build-sklearn:
+    cmd.run:
+        - name: /home/sklearn/venv/bin/python setup.py develop
+        - cwd: /home/sklearn/scikit-learn/
+        - user: sklearn
+        - require:
+            - git: sklearn-git-repo
+
+build-doc:
+    cmd.run:
+        - name: source /home/sklearn/venv/bin/activate && make html
+        - cwd: /home/sklearn/scikit-learn/doc
+        - user: sklearn
+        - require:
+            - cmd: build-sklearn
+
+
+
+
