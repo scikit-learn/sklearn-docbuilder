@@ -1,5 +1,6 @@
 import os
-import sys, getopt
+import sys
+import getopt
 import yaml
 
 from libcloud.compute.providers import get_driver
@@ -9,9 +10,9 @@ from libcloud.compute.deployment import SSHKeyDeployment
 SKLEARN_RACKSPACE_NAME = "SKLEARN_RACKSPACE_NAME"
 SKLEARN_RACKSPACE_KEY = "SKLEARN_RACKSPACE_KEY"
 RACKSPACE_DRIVER = "rackspace"
-REGION="ord"
+REGION = "ord"
 
-IMAGE_NAME = 'Ubuntu 12.04 LTS (Precise Pangolin)'
+IMAGE_NAME = 'Ubuntu 12.04 LTS'
 NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
 PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
@@ -86,7 +87,7 @@ def main(argv):
     # Obtain list of machine sizes
     machine_sizes = [n.ram for n in conn_sklearn.list_sizes()]
     selected_ram = None
-    server_status = 3 # assume busy
+    server_status = 3  # assume busy
 
     try:
         opts, args = getopt.getopt(argv, "h")
@@ -117,8 +118,15 @@ def main(argv):
             s_node_size = [i for i in conn_sklearn.list_sizes()
                            if i.ram >= selected_ram][0]
         print '  -   Configuring the builder image to ', IMAGE_NAME
-        s_node_image = [i for i in conn_sklearn.list_images()
-                        if i.name == IMAGE_NAME][0]
+
+        images = conn_sklearn.list_images()
+        matching_images = [i for i in images if i.name == IMAGE_NAME]
+        if len(matching_images) == 0:
+            image_names = "\n".join(sorted(i.name for i in images))
+            raise RuntimeError("Could not find image with name %s,"
+                               " available images:\n%s"
+                               % (IMAGE_NAME, image_names))
+        s_node_image = matching_images[0]
 
         # Create a new node if non exists
         with open(PUBLIC_KEY_PATH) as fp:
@@ -161,8 +169,4 @@ file_roots:
 
 
 if __name__ == "__main__":
-   main(sys.argv[1:])
-
-
-
-
+    main(sys.argv[1:])
