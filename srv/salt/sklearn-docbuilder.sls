@@ -30,3 +30,11 @@ sklearn:
             - user: sklearn
             - pkg: python-virtualenv
 
+sklearn-git-repo:
+    git.latest:
+        - name: https://github.com/scikit-learn/scikit-learn.git
+        - rev: master
+        - target: /home/sklearn/scikit-learn/
+        - user: sklearn
+        - require:
+            - user: sklearn
