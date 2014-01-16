@@ -50,6 +50,7 @@ def gen_salt_roster(host_ip=None):
     output_stream = open("etc/salt/roster", "w")
     yaml.dump(yaml.load(salt_roster), output_stream, default_flow_style=False)
     output_stream.close()
+    return ipv4
 
 
 def wait_for_active_status(server_status, connect):
@@ -153,7 +154,7 @@ def main(argv):
         os.makedirs('etc/salt')
 
     print("Storing connection information to etc/salt/roster")
-    gen_salt_roster(host_ip=node.public_ip)
+    ip = gen_salt_roster(host_ip=node.public_ip)
 
     print("Configuring etc/salt/master")
     salt_master = open("etc/salt/master", "w")
@@ -167,11 +168,10 @@ def main(argv):
     # paramiko
     os.chmod('docbuilder_rsa', 0o600)
 
-    print('Configuring server with salt:')
-    cmd = 'salt-ssh -c %s/etc/salt \\* state.highstate' % here
-    print(cmd)
-    # TODO: use the Salt SSHClient Python class instead of this hack
-    os.system(cmd)
+    # TODO: find a way to launch the state.highstate command via salt-ssh
+
+    print("SSH connection command:")
+    print("  ssh -i %s root@%s" % (PRIVATE_KEY_PATH, ip))
 
 
 if __name__ == "__main__":
