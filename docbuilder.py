@@ -168,10 +168,12 @@ def main(argv):
     # paramiko
     os.chmod('docbuilder_rsa', 0o600)
 
-    # TODO: find a way to launch the state.highstate command via salt-ssh
-
     print("SSH connection command:")
     print("  ssh -i %s root@%s" % (PRIVATE_KEY_PATH, ip))
+
+    # TODO: find a way to launch the state.highstate command via salt-ssh
+    print("You can now configure the server with:")
+    print("  salt-ssh -c ./etc/salt docbuilder state.highstate")
 
 
 if __name__ == "__main__":
