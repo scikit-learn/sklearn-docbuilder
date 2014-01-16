@@ -19,6 +19,17 @@ PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
 PRIVATE_KEY_PATH = 'docbuilder_rsa'
 TIMEOUT = 1200
 
+MASTER_TEMPLATE = """\
+root_dir: {root_dir}
+
+fileserver_backend:
+  - roots
+
+file_roots:
+  base:
+    - {root_dir}/srv/salt
+"""
+
 
 def print_usage(machine_sizes):
     print('USAGE: python docbuilder.py [machine_size]')
@@ -127,16 +138,16 @@ def main(argv):
         with open(PUBLIC_KEY_PATH) as fp:
             pub_key_content = fp.read()
         step = SSHKeyDeployment(pub_key_content)
-        print("  -  Starting node deployment - This may take a few minutes")
-        print("     WARNING: Please do not interrupt the process")
+        print("Starting node deployment - This may take a few minutes")
+        print("WARNING: Please do not interrupt the process")
         node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
                                           size=size, deploy=step,
                                           timeout=TIMEOUT, ssh_timeout=TIMEOUT)
-        print('  -   Node successfully provisioned: ', NODE_NAME)
+        print('Node successfully provisioned: ', NODE_NAME)
     else:
         node = [n for n in existing_nodes if n.name == NODE_NAME][0]
-        print("Node '%s' found"  % NODE_NAME)
-        print('  -   Gathering connection information')
+        print("Node '%s' found" % NODE_NAME)
+        print('Gathering connection information')
 
     if not os.path.exists('etc/salt'):
         os.makedirs('etc/salt')
@@ -147,16 +158,7 @@ def main(argv):
     print("Configuring etc/salt/master")
     salt_master = open("etc/salt/master", "w")
     here = os.getcwd()
-    salt_master.write("""\
-root_dir: {root_dir}
-
-fileserver_backend:
-  - roots
-
-file_roots:
-  base:
-    - {root_dir}/srv/salt
-""".format(root_dir=here))
+    salt_master.write(MASTER_TEMPLATE.format(root_dir=here))
 
     print('Checking if the server is active:')
     server_status = wait_for_active_status(server_status, conn_sklearn)
@@ -166,7 +168,7 @@ file_roots:
     os.chmod('docbuilder_rsa', 0o600)
 
     print('Configuring server with salt:')
-    cmd = "salt-ssh -c ./etc/salt "*" state.highstate"
+    cmd = 'salt-ssh -c %s/etc/salt \\* state.highstate' % here
     print(cmd)
     # TODO: use the Salt SSHClient Python class instead of this hack
     os.system(cmd)
