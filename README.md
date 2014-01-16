@@ -67,7 +67,8 @@ Changing the server configuration
 The Salt Stack configuration for the server and the script run by the cron job
 to build the documentation once the server is ready can be found in the
 [srv/salt](
-https://github.com/scikit-learn/sklearn-docbuilder/tree/master/srv/salt) subfolder.
+https://github.com/scikit-learn/sklearn-docbuilder/tree/master/srv/salt)
+subfolder.
 
 To re-apply a configuration change in the configuration re-rerun:
 
