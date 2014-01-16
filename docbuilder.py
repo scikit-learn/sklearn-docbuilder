@@ -165,6 +165,12 @@ file_roots:
     # paramiko
     os.chmod('docbuilder_rsa', 0o600)
 
+    print('Configuring server with salt:')
+    cmd = "salt-ssh -c ./etc/salt "*" state.highstate"
+    print(cmd)
+    # TODO: use the Salt SSHClient Python class instead of this hack
+    os.system(cmd)
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])

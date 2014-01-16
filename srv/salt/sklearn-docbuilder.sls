@@ -21,6 +21,15 @@ sklearn:
         - shell: /bin/bash
         - home: /home/sklearn
 
+/home/sklearn/public_html:
+    file.directory:
+        - user: sklearn
+        - group: sklearn
+        - mode: 755
+        - makedirs: True
+        - require:
+            - user: sklearn
+
 /home/sklearn/.ssh:
     file.directory:
         - user: sklearn
@@ -74,30 +83,25 @@ sklearn-git-repo:
         - require:
             - user: sklearn
 
-build-sklearn:
-    cmd.run:
-        - name: /home/sklearn/venv/bin/python setup.py develop
-        - cwd: /home/sklearn/scikit-learn/
+# Upload a bash script that builds the doc and upload the doc on
+# http://scikit-learn.org/dev 
+/home/sklearn/update_doc.sh:
+    file.managed:
         - user: sklearn
+        - group: sklearn
+        - source: salt://update_doc.sh
         - require:
-            - git: sklearn-git-repo
+            - user: sklearn
 
-build-doc:
-    cmd.run:
-        - name: source /home/sklearn/venv/bin/activate && make html
-        - cwd: /home/sklearn/scikit-learn/doc
-        - user: sklearn
-        - require:
-            - cmd: build-sklearn
-
-upload-doc:
-    cmd.run:
-        - name: rsync -e 'ssh -o UserKnownHostsFile=/dev/null
-                             -o StrictHostKeyChecking=no'
-                      -rltvz --delete
-                _build/html/stable/
-                sklearndocbuild,scikit-learn@web.sourceforge.net:htdocs/dev/
-        - user: sklearn
-        - cwd: /home/sklearn/scikit-learn/doc
-        - require:
-            - cmd: build-doc
+# Register the execution of the script in a cron job
+update-doc-cron-job:
+  cron.present:
+    - name: bash /home/sklearn/update_doc.sh
+                 > /home/sklearn/public_html/update_doc.log 2>&1
+    - user: sklearn
+    - minute: 2
+    - hour: '*/1'
+    - require:
+        - git: sklearn-git-repo
+        - file: /home/sklearn/update_doc.sh
+        - file: /home/sklearn/public_html
