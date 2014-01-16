@@ -41,14 +41,6 @@ def gen_salt_roster(host_ip=None):
     output_stream.close()
 
 
-def r_status(server_state):
-    if server_state == 0:
-        status = "READY"
-    else:
-        status = "BUSY - (waiting for active status)"
-    return status
-
-
 def wait_for_active_status(server_status, connect):
     # Wait for active server status
     wait_id = 0
@@ -59,14 +51,14 @@ def wait_for_active_status(server_status, connect):
         server_status = s_node.state
         wait_id = (wait_id + 1) % len(wait_li)
         if server_status == 0:
-            state_str = "\nREADY"
+            state_str = "READY"
         else:
-            state_str = "BUSY- (waiting for active status)"
+            state_str = "BUSY - (waiting for active status)"
         sys.stdout.write("\r%s%s" %
                          (state_str, wait_li[wait_id]))
         sys.stdout.flush()
 
-    sys.stdout.write("\n\nServer is now active\n\n")
+    sys.stdout.write("\nServer is now active\n")
     return server_status
 
 
@@ -110,18 +102,18 @@ def main(argv):
 
     # Check if our desired node already exists
     if not any(n.name == NODE_NAME for n in existing_nodes):
-        print 'The docbuilder node does not exist yet - creating node...'
-        print '  -  Configuring node size'
+        print('The docbuilder node does not exist yet - creating node...')
+        print('  -  Configuring node size')
         if selected_ram is None:
-            print '    --   No node size provided: using default size of 2GB'
-            s_node_size = [i for i in conn_sklearn.list_sizes()
-                           if i.ram == DEFAULT_NODE_SIZE][0]
+            print('    --   No node size provided: using default size of 2GB')
+            size = [i for i in conn_sklearn.list_sizes()
+                      if i.ram == DEFAULT_NODE_SIZE][0]
         else:
-            print '    --   Node size set to: ', selected_ram
-            s_node_size = [i for i in conn_sklearn.list_sizes()
-                           if i.ram >= selected_ram][0]
-        print '  -   Configuring the builder image to ', IMAGE_NAME
+            print('    --   Node size set to: ', selected_ram)
+            size = [i for i in conn_sklearn.list_sizes()
+                      if i.ram >= selected_ram][0]
 
+        print('  -   Configuring the builder image to ', IMAGE_NAME)
         images = conn_sklearn.list_images()
         matching_images = [i for i in images if i.name == IMAGE_NAME]
         if len(matching_images) == 0:
@@ -135,21 +127,24 @@ def main(argv):
         with open(PUBLIC_KEY_PATH) as fp:
             pub_key_content = fp.read()
         step = SSHKeyDeployment(pub_key_content)
-        print "  -  Starting node deployment - This may take a few minutes"
-        print "     WARNING: Please do not interrupt the process"
-        s_node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
-                                          size=s_node_size, deploy=step,
+        print("  -  Starting node deployment - This may take a few minutes")
+        print("     WARNING: Please do not interrupt the process")
+        node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
+                                          size=size, deploy=step,
                                           timeout=TIMEOUT, ssh_timeout=TIMEOUT)
-        print '  -   Node successfully provisioned: ', NODE_NAME
+        print('  -   Node successfully provisioned: ', NODE_NAME)
     else:
-        s_node = [n for n in existing_nodes if n.name == NODE_NAME][0]
-        print 'Node \'', NODE_NAME, '\' found'
-        print '  -   Gathering information'
+        node = [n for n in existing_nodes if n.name == NODE_NAME][0]
+        print("Node '%s' found"  % NODE_NAME)
+        print('  -   Gathering connection information')
 
     if not os.path.exists('etc/salt'):
         os.makedirs('etc/salt')
-    gen_salt_roster(host_ip=s_node.public_ip)
 
+    print("Storing connection information to etc/salt/roster")
+    gen_salt_roster(host_ip=node.public_ip)
+
+    print("Configuring etc/salt/master")
     salt_master = open("etc/salt/master", "w")
     here = os.getcwd()
     salt_master.write("""\
@@ -163,7 +158,7 @@ file_roots:
     - {root_dir}/srv/salt
 """.format(root_dir=here))
 
-    print '\nChecking if the server is active'
+    print('Checking if the server is active:')
     server_status = wait_for_active_status(server_status, conn_sklearn)
 
     # Making sure the private key has the right permissions to be useable by
