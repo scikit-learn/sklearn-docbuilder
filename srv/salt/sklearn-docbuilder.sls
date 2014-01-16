@@ -89,3 +89,15 @@ build-doc:
         - user: sklearn
         - require:
             - cmd: build-sklearn
+
+upload-doc:
+    cmd.run:
+        - name: rsync -e 'ssh -o UserKnownHostsFile=/dev/null
+                             -o StrictHostKeyChecking=no'
+                      -rltvz --delete
+                _build/html/stable/
+                sklearndocbuild,scikit-learn@web.sourceforge.net:htdocs/dev/
+        - user: sklearn
+        - cwd: /home/sklearn/scikit-learn/doc
+        - require:
+            - cmd: build-doc
