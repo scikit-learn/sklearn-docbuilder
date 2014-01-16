@@ -98,7 +98,17 @@ a new keypair with:
     ssh-keygen -f docbuilder_rsa -N ''
 
 Then commit the new public and push it to github and send the private key by
-email to the other scikit-learn maintainers.
+email to the other scikit-learn maintainers and ask one of them to update the
+authorized public key of the `sklearndocbuild` user profile on sourceforge.net.
+
+
+Accessing the Rackspace Cloud management console
+------------------------------------------------
+
+Use rackspace credentials to list the running servers and terminate them if
+needed at:
+
+    https://mycloud.rackspace.com/a/sklearn/
 
 
 Thanks
