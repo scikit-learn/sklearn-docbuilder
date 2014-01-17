@@ -2,7 +2,7 @@ sklearn-docbuilder
 ==================
 
 Script to configure a cloud server to build the documentation and example
-gallery and update the sklearn website.
+gallery and update the [sklearn dev website](http://scikit-learn.org/dev).
 
 This script is only meant to be used by scikit-learn project maintainers with
 github and sourceforge write access.
