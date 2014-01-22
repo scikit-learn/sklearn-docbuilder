@@ -18,6 +18,7 @@ scipy-stack-packages:
 
             # Latex packages for math expressions in sphinx
             - latex209-base
+            - texlive-latex-extra
             - dvipng
 
 sklearn:
