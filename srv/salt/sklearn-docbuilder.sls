@@ -16,6 +16,10 @@ scipy-stack-packages:
             - ipython
             - make
 
+            # Latex packages for math expressions in sphinx
+            - latex209-base
+            - dvipng
+
 sklearn:
     user.present:
         - shell: /bin/bash
