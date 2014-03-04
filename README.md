@@ -76,6 +76,14 @@ To re-apply a configuration change in the configuration re-rerun:
     salt-ssh -c ./etc/salt docbuilder state.highstate
 
 
+Fixing execution errors in docbuilder.py
+----------------------------------------
+
+API change for Apache Libcloud are documented here:
+
+    https://ci.apache.org/projects/libcloud/docs/upgrade_notes.html
+
+
 Connecting to the server via SSH
 --------------------------------
 
