@@ -12,7 +12,7 @@ SKLEARN_RACKSPACE_KEY = "SKLEARN_RACKSPACE_KEY"
 RACKSPACE_DRIVER = "rackspace"
 REGION = "ord"
 
-IMAGE_NAME = 'Ubuntu 12.04 LTS'
+IMAGE_NAME = 'Ubuntu 12.04 LTS (Precise Pangolin)'
 NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
 PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
@@ -38,9 +38,9 @@ def print_usage(machine_sizes):
     print(machine_sizes)
 
 
-def gen_salt_roster(host_ip=None):
+def gen_salt_roster(host_ips=None):
     # XXX: cannot connect to host with the IPv6 public address
-    ipv4 = [ip for ip in host_ip if not ":" in ip][0]
+    ipv4 = [ip for ip in host_ips if not ":" in ip][0]
     salt_roster = """\
 %s:
     host: %s
@@ -154,7 +154,7 @@ def main(argv):
         os.makedirs('etc/salt')
 
     print("Storing connection information to etc/salt/roster")
-    ip = gen_salt_roster(host_ip=node.public_ip)
+    ip = gen_salt_roster(host_ips=node.public_ips)
 
     print("Configuring etc/salt/master")
     salt_master = open("etc/salt/master", "w")
