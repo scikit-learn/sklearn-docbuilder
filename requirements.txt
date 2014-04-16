@@ -1,4 +1,4 @@
-salt>=0.17.2
+salt==0.17.4
 apache-libcloud
 pyaml
 paramiko
