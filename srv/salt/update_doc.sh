@@ -20,11 +20,20 @@ git reset --hard origin/master
 
 # Compile source code
 echo "Building scikit-learn"
+if [[ "$1" = "clean" ]];
+then
+  make clean
+fi
+
 python setup.py develop
 
 # Compile doc and run example to populate the gallery
 echo "Building examples and documentation"
 cd doc
+if [[ "$1" = "clean" ]];
+then
+  make clean
+fi
 sphinx-build -b html -d _build/doctrees . _build/html/stable
 
 # Upload to sourceforge using rsync
