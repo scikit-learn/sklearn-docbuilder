@@ -21,6 +21,10 @@ scipy-stack-packages:
             - texlive-latex-extra
             - dvipng
 
+            # Linear Algebra routines
+            - libatlas-dev
+            - libatlas3gf-base
+
 sklearn:
     user.present:
         - shell: /bin/bash
