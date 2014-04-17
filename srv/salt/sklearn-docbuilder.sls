@@ -123,7 +123,7 @@ update-doc-clean-cron-job:
     - name: bash /home/sklearn/update_doc.sh clean
                  > /home/sklearn/public_html/update_doc_clean.log 2>&1
     - user: sklearn
-    - minute: 2
+    - minute: 32
     - hour: 2
     - require:
         - git: sklearn-git-repo
