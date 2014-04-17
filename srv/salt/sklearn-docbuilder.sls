@@ -121,7 +121,6 @@ update-doc-clean-cron-job:
     - user: sklearn
     - minute: 2
     - hour: 2
-    - day: '*/1'
     - require:
         - git: sklearn-git-repo
         - file: /home/sklearn/update_doc.sh
