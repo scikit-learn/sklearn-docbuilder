@@ -35,6 +35,7 @@ then
   make clean
 fi
 sphinx-build -b html -d _build/doctrees . _build/html/stable
+make optipng
 
 # Upload to sourceforge using rsync
 if [ -f _build/html/stable/index.html ];

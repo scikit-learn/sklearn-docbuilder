@@ -15,6 +15,7 @@ scipy-stack-packages:
             - python-nose
             - ipython
             - make
+            - optipng
 
             # Latex packages for math expressions in sphinx
             - latex209-base
