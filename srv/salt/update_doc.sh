@@ -35,7 +35,10 @@ then
   make clean
 fi
 sphinx-build -b html -d _build/doctrees . _build/html/stable
-make optipng
+if [[ "$1" = "clean" ]];
+then
+  make optipng
+fi
 
 # Upload to sourceforge using rsync
 if [ -f _build/html/stable/index.html ];
