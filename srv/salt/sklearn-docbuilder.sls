@@ -8,14 +8,18 @@ scipy-stack-packages:
             - python-git
             - python-numpy
             - python-scipy
-            - python-matplotlib
             - python-pip
             - python-coverage
             - python-virtualenv
             - python-nose
+            - python-matplotlib  # to ensure that its dependency are there
             - ipython
             - make
             - optipng
+
+            # Required for building a more recent matplotlib from source
+            - libfreetype6-dev
+            - libpng12-dev
 
             # Latex packages for math expressions in sphinx
             - latex209-base
@@ -81,6 +85,7 @@ sklearn:
             - coverage
             - nose
             - ipython
+            - matplotlib
         - bin_env: /home/sklearn/venv
         - user: sklearn
 
