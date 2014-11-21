@@ -69,6 +69,15 @@ sklearn:
         - require:
             - file: /home/sklearn/.ssh
 
+
+# A system upgrade of distribute is required to install matplotlib
+# with pip
+distribute-upgrade:
+    pip.installed:
+        - names:
+            - distribute
+        - upgrade: True
+
 /home/sklearn/venv:
     virtualenv.managed:
         - python: /usr/bin/python
@@ -78,6 +87,7 @@ sklearn:
         - require:
             - user: sklearn
             - pkg: python-virtualenv
+            - pip: distribute-upgrade
     pip.installed:
         - names:
             - sphinx
