@@ -12,7 +12,6 @@ scipy-stack-packages:
             - python-coverage
             - python-virtualenv
             - python-nose
-            - python-matplotlib  # to ensure that its dependency are there
             - ipython
             - make
             - optipng
@@ -86,8 +85,6 @@ sklearn:
             - nose
             - ipython
             - matplotlib
-        # upgrade the version of matplotlib that comes from the system
-        - upgrade: True
         - bin_env: /home/sklearn/venv
         - user: sklearn
 
