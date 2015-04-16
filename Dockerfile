@@ -1,4 +1,3 @@
-# This is a comment
 FROM ubuntu:14.04
 MAINTAINER Sylvain Bellemare <sbellem@gmail.com>
 RUN apt-get update
@@ -18,6 +17,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y latex209-base texlive-late
 # Linear Algebra routines
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libatlas-dev libatlas3gf-base
 
+# for scipy
+RUN apt-get install -y libblas-dev liblapack-dev gfortran
+
+
 RUN pip install virtualenv            
 
 RUN useradd -ms /bin/bash sklearn
@@ -32,4 +35,4 @@ RUN git clone https://github.com/scikit-learn/scikit-learn.git
 RUN virtualenv venv
 
 RUN venv/bin/pip install --upgrade pip    
-RUN venv/bin/pip install sphinx coverage nose ipython matplotlib
+RUN venv/bin/pip install sphinx coverage nose ipython matplotlib scipy
