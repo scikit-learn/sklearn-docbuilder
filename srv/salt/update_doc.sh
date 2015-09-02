@@ -17,6 +17,7 @@ cd $HOME/scikit-learn
 echo "Fetching source from github"
 git fetch origin
 git reset --hard origin/master
+rev=$(git rev-parse --short HEAD)
 
 # Compile source code
 echo "Building scikit-learn"
@@ -40,15 +41,19 @@ then
   make optipng
 fi
 
-# Upload to sourceforge using rsync
-if [ -f _build/html/stable/index.html ];
+test -f _build/html/stable/index.html
+
+echo "Copying documentation to scikit-learn.github.io/dev/"
+if [ -d $HOME/scikit-learn.github.io ]
 then
-  echo "Uploading to documentation http://scikit-learn.org/dev"
-  rsync -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'\
-        -rltvz --delete _build/html/stable/ \
-        sklearndocbuild,scikit-learn@web.sourceforge.net:htdocs/dev/
-  echo "http://scikit-learn.org/dev successfully updated!"
+  cd $HOME/scikit-learn.github.io
 else
-  echo "Failed to generate the documentation."
-  exit 1
+  cd $HOME
+  git clone git@github.com:scikit-learn/scikit-learn.github.io.git
+  cd scikit-learn.github.io
 fi
+git rm -rf dev/
+cp -R $HOME/scikit-learn/doc/_build/html/stable dev
+git add -f dev/
+git commit -m "Rebuild dev docs at master=$rev" dev
+git push
