@@ -10,7 +10,6 @@ scipy-stack-packages:
             - python-scipy
             - python-pip
             - python-coverage
-            - python-virtualenv
             - python-nose
             - ipython
             - make
@@ -70,24 +69,27 @@ sklearn:
             - file: /home/sklearn/.ssh
 
 
-# A system upgrade of distribute is required to install matplotlib
-# with pip
-distribute-upgrade:
-    pip.installed:
-        - names:
-            - distribute
-        - upgrade: True
+# Upgrade pip, setuptools and virtualenv only once,
+# before creating the virtual environment itself.
+# This is required as the version of virtualenv shipped
+# by the python-virtualenv package is too old and
+# has a bug that prevents it to upgrade setuptools to
+# a version recent-enough for matplotlib to install
+# correctly
+install-virtualenv:
+    cmd.run:
+        - name: pip install -U -q pip setuptools virtualenv
+        - unless: test -f /home/sklearn/venv
+
 
 /home/sklearn/venv:
     virtualenv.managed:
         - python: /usr/bin/python
         - system_site_packages: True
-        - distribute: True
         - user: sklearn
         - require:
             - user: sklearn
-            - pkg: python-virtualenv
-            - pip: distribute-upgrade
+            - cmd: install-virtualenv
     pip.installed:
         - names:
             - sphinx
