@@ -68,6 +68,15 @@ sklearn:
         - require:
             - file: /home/sklearn/.ssh
 
+/home/sklearn/.ssh/config:
+    file.managed:
+        - user: sklearn
+        - group: sklearn
+        - source: salt://ssh_config
+        - require:
+            - user: sklearn
+            - file: /home/sklearn/.ssh
+
 
 # Install a recent version of virtualenv with pip
 # before creating the virtual environment itself.
@@ -161,3 +170,5 @@ update-doc-clean-cron-job:
         - file: /home/sklearn/update_doc.sh
         - file: /home/sklearn/public_html
         - file: /home/sklearn/.gitconfig
+        - file: /home/sklearn/.ssh/config
+        - file: /home/sklearn/.ssh/id_rsa
