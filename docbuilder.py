@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import sys
 import getopt
@@ -12,7 +13,7 @@ SKLEARN_RACKSPACE_KEY = "SKLEARN_RACKSPACE_KEY"
 RACKSPACE_DRIVER = "rackspace"
 REGION = "ord"
 
-IMAGE_NAME = 'Ubuntu 12.04 LTS (Precise Pangolin)'
+IMAGE_NAME = 'Ubuntu 12.04 LTS (Precise Pangolin) (PVHVM)'
 NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
 PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
@@ -125,7 +126,7 @@ def main(argv):
             size = [i for i in conn_sklearn.list_sizes()
                       if i.ram >= selected_ram][0]
 
-        print('  -   Configuring the builder image to ', IMAGE_NAME)
+        print('  -   Configuring the builder image to', IMAGE_NAME)
         images = conn_sklearn.list_images()
         matching_images = [i for i in images if i.name == IMAGE_NAME]
         if len(matching_images) == 0:
