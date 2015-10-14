@@ -35,7 +35,7 @@ if [[ "$1" = "clean" ]];
 then
   make clean
 fi
-sphinx-build -b html -d _build/doctrees . _build/html/stable
+make dist
 if [[ "$1" = "clean" ]];
 then
   make optipng
