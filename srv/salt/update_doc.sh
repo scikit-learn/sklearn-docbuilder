@@ -52,7 +52,7 @@ else
   git clone git@github.com:scikit-learn/scikit-learn.github.io.git
   cd scikit-learn.github.io
 fi
-git rm -rf dev/
+git rm -rf dev/ && rm -rf dev/
 cp -R $HOME/scikit-learn/doc/_build/html/stable dev
 git add -f dev/
 git commit -m "Rebuild dev docs at master=$rev" dev
