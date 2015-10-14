@@ -109,6 +109,8 @@ sklearn-git-repo:
         - require:
             - user: sklearn
 
+
+
 # Upload a bash script that builds the doc and upload the doc on
 # http://scikit-learn.org/dev 
 /home/sklearn/update_doc.sh:
@@ -116,6 +118,17 @@ sklearn-git-repo:
         - user: sklearn
         - group: sklearn
         - source: salt://update_doc.sh
+        - require:
+            - user: sklearn
+
+
+# Upload git configuration to be able to commit to the
+# scikit-learn.github.io repo
+/home/sklearn/.gitconfig:
+    file.managed:
+        - user: sklearn
+        - group: sklearn
+        - source: salt://gitconfig
         - require:
             - user: sklearn
 
@@ -132,6 +145,7 @@ update-doc-cron-job:
         - git: sklearn-git-repo
         - file: /home/sklearn/update_doc.sh
         - file: /home/sklearn/public_html
+        - file: /home/sklearn/.gitconfig
 
 
 # Once in a while build the doc from a clean folder
@@ -146,3 +160,4 @@ update-doc-clean-cron-job:
         - git: sklearn-git-repo
         - file: /home/sklearn/update_doc.sh
         - file: /home/sklearn/public_html
+        - file: /home/sklearn/.gitconfig
