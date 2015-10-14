@@ -143,8 +143,8 @@ def main(argv):
         print("Starting node deployment - This may take a few minutes")
         print("WARNING: Please do not interrupt the process")
         node = conn_sklearn.deploy_node(name=NODE_NAME, image=s_node_image,
-                                          size=size, deploy=step,
-                                          timeout=TIMEOUT, ssh_timeout=TIMEOUT)
+                                        size=size, deploy=step,
+                                        timeout=TIMEOUT, ssh_timeout=TIMEOUT)
         print('Node successfully provisioned: ', NODE_NAME)
     else:
         node = [n for n in existing_nodes if n.name == NODE_NAME][0]
