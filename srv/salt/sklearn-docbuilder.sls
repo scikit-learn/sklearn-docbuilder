@@ -69,7 +69,7 @@ sklearn:
             - file: /home/sklearn/.ssh
 
 
-# Upgrade pip, setuptools and virtualenv only once,
+# Install a recent version of virtualenv with pip
 # before creating the virtual environment itself.
 # This is required as the version of virtualenv shipped
 # by the python-virtualenv package is too old and
@@ -78,7 +78,7 @@ sklearn:
 # correctly
 install-virtualenv:
     cmd.run:
-        - name: pip install -U -q pip setuptools virtualenv
+        - name: pip install -q virtualenv
         - unless: test -f /home/sklearn/venv
 
 
@@ -100,6 +100,7 @@ install-virtualenv:
         - bin_env: /home/sklearn/venv
         - user: sklearn
 
+
 sklearn-git-repo:
     git.latest:
         - name: https://github.com/scikit-learn/scikit-learn.git
@@ -108,7 +109,6 @@ sklearn-git-repo:
         - user: sklearn
         - require:
             - user: sklearn
-
 
 
 # Upload a bash script that builds the doc and upload the doc on
