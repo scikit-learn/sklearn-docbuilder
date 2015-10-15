@@ -104,7 +104,7 @@ install-virtualenv:
             - cmd: install-virtualenv
     pip.installed:
         - names:
-            - sphinx
+            - sphinx == 1.2.3
             - coverage
             - nose
             - ipython
