@@ -85,6 +85,9 @@ sklearn:
 # has a bug that prevents it to upgrade setuptools to
 # a version recent-enough for matplotlib to install
 # correctly
+# Note that we use a `cmd.run` state instead of a
+# `pip.installed` state to work around a bug in salt:
+# https://github.com/saltstack/salt/issues/21845
 install-virtualenv:
     cmd.run:
         - name: pip install -q virtualenv
