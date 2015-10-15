@@ -18,7 +18,7 @@ NODE_NAME = 'docbuilder'
 DEFAULT_NODE_SIZE = 2048
 PUBLIC_KEY_PATH = 'docbuilder_rsa.pub'
 PRIVATE_KEY_PATH = 'docbuilder_rsa'
-TIMEOUT = 1200
+TIMEOUT = 5000
 
 MASTER_TEMPLATE = """\
 root_dir: {root_dir}
@@ -173,8 +173,8 @@ def main(argv):
     print("  ssh -i %s root@%s" % (PRIVATE_KEY_PATH, ip))
 
     # TODO: find a way to launch the state.highstate command via salt-ssh
-    print("You can now configure the server with:")
-    print("  salt-ssh -c ./etc/salt docbuilder state.highstate")
+    print("You can now configure the server with (can take several minutes):")
+    print("  salt-ssh -i -c ./etc/salt docbuilder state.highstate")
 
 
 if __name__ == "__main__":
