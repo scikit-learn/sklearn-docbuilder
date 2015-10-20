@@ -52,6 +52,8 @@ else
   git clone git@github.com:scikit-learn/scikit-learn.github.io.git
   cd scikit-learn.github.io
 fi
+git checkout master
+git reset --hard origin/master
 git rm -rf dev/ && rm -rf dev/
 cp -R $HOME/scikit-learn/doc/_build/html/stable dev
 git add -f dev/
