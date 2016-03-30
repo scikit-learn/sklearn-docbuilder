@@ -105,7 +105,7 @@ a new keypair with:
 
     ssh-keygen -f docbuilder_rsa -N ''
 
-Then commit the new public and push it to github and send the private key by
+Then commit the new public key and push it to github and send the private key by
 email to the other scikit-learn maintainers and ask one of them to update the
 authorized public key of the `sklearndocbuild` user profile on sourceforge.net.
 
